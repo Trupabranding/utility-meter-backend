@@ -1,0 +1,166 @@
+{
+  "info": {
+    "name": "Utility Meter Reading Management System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "3c7f2c9a-6d2e-4ad3-9af9-8d6f3a9b9e11",
+    "description": "FastAPI backend for Utility Meter platform"
+  },
+  "variable": [
+    { "key": "scheme", "value": "http" },
+    { "key": "host", "value": "localhost" },
+    { "key": "port", "value": "8000" },
+    { "key": "basePath", "value": "/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [ {"key":"Content-Type","value":"application/json"} ],
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}{{basePath}}/auth/login",
+              "host": ["{{host}}"],
+              "path": ["api","v1","auth","login"],
+              "protocol": "{{scheme}}",
+              "port": "{{port}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Password123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [ {"key":"Authorization","value":"Bearer {{accessToken}}"} ],
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}{{basePath}}/auth/me",
+              "host": ["{{host}}"],
+              "path": ["api","v1","auth","me"],
+              "protocol": "{{scheme}}",
+              "port": "{{port}}"
+            }
+          }
+        },
+        {
+          "name": "Refresh",
+          "request": {
+            "method": "POST",
+            "header": [ {"key":"Content-Type","value":"application/json"} ],
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}{{basePath}}/auth/refresh",
+              "host": ["{{host}}"],
+              "path": ["api","v1","auth","refresh"],
+              "protocol": "{{scheme}}",
+              "port": "{{port}}"
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {"name":"List Users","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/users?page=1&limit=20","host":["{{host}}"],"path":["api","v1","users"],"query":[{"key":"page","value":"1"},{"key":"limit","value":"20"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Get User","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/users/{{userId}}","host":["{{host}}"],"path":["api","v1","users","{{userId}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Update User","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/users/{{userId}}","host":["{{host}}"],"path":["api","v1","users","{{userId}}"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"name\": \"Updated Name\",\n  \"status\": \"active\"\n}"}}},
+        {"name":"Change Password","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/users/{{userId}}/change-password","host":["{{host}}"],"path":["api","v1","users","{{userId}}","change-password"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"current_password\": \"Password123!\",\n  \"new_password\": \"NewPassword123!\"\n}"}}}
+      ]
+    },
+    {
+      "name": "Agents",
+      "item": [
+        {"name":"List Agents","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/agents?page=1&limit=20","host":["{{host}}"],"path":["api","v1","agents"],"query":[{"key":"page","value":"1"},{"key":"limit","value":"20"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Create Agent","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/agents","host":["{{host}}"],"path":["api","v1","agents"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"user_id\": \"{{userId}}\",\n  \"max_load\": 10,\n  \"status\": \"available\",\n  \"location\": { \"latitude\": 6.5, \"longitude\": 3.3 }\n}"}}},
+        {"name":"Get Agent","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/agents/{{agentId}}","host":["{{host}}"],"path":["api","v1","agents","{{agentId}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Update Agent","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/agents/{{agentId}}","host":["{{host}}"],"path":["api","v1","agents","{{agentId}}"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"status\": \"busy\"\n}"}}},
+        {"name":"Agent Stats","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/agents/{{agentId}}/stats","host":["{{host}}"],"path":["api","v1","agents","{{agentId}}","stats"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Available Agents","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/agents/available","host":["{{host}}"],"path":["api","v1","agents","available"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Update My Location","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/agents/me/location","host":["{{host}}"],"path":["api","v1","agents","me","location"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{ \n  \"latitude\": 6.5, \n  \"longitude\": 3.3 \n}"}}},
+        {"name":"Update My Status","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/agents/me/status?status=available","host":["{{host}}"],"path":["api","v1","agents","me","status"],"query":[{"key":"status","value":"available"}],"protocol":"{{scheme}}","port":"{{port}}"}}}
+      ]
+    },
+    {
+      "name": "Meters",
+      "item": [
+        {"name":"List Meters","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/meters?page=1&limit=20","host":["{{host}}"],"path":["api","v1","meters"],"query":[{"key":"page","value":"1"},{"key":"limit","value":"20"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Create Meter","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/meters","host":["{{host}}"],"path":["api","v1","meters"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"serial_number\": \"MTR-0001\",\n  \"address\": \"123 Main St\",\n  \"meter_type\": \"electric\",\n  \"priority\": \"medium\",\n  \"status\": \"active\",\n  \"location\": { \"latitude\": 6.5, \"longitude\": 3.3 }\n}"}}},
+        {"name":"Get Meter","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/meters/{{meterId}}","host":["{{host}}"],"path":["api","v1","meters","{{meterId}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Update Meter","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/meters/{{meterId}}","host":["{{host}}"],"path":["api","v1","meters","{{meterId}}"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"priority\": \"high\"\n}"}}},
+        {"name":"Delete Meter","request":{"method":"DELETE","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/meters/{{meterId}}","host":["{{host}}"],"path":["api","v1","meters","{{meterId}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Nearby Meters","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/meters/nearby?lat=6.5&lng=3.3&radius=1000&limit=20","host":["{{host}}"],"path":["api","v1","meters","nearby"],"query":[{"key":"lat","value":"6.5"},{"key":"lng","value":"3.3"},{"key":"radius","value":"1000"},{"key":"limit","value":"20"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Unassigned Meters","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/meters/unassigned","host":["{{host}}"],"path":["api","v1","meters","unassigned"],"protocol":"{{scheme}}","port":"{{port}}"}}}
+      ]
+    },
+    {
+      "name": "Readings",
+      "item": [
+        {"name":"List Readings","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/readings?page=1&limit=20","host":["{{host}}"],"path":["api","v1","readings"],"query":[{"key":"page","value":"1"},{"key":"limit","value":"20"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Create Reading","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/readings","host":["{{host}}"],"path":["api","v1","readings"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"meter_id\": \"{{meterId}}\",\n  \"reading_value\": 123.45,\n  \"reading_timestamp\": \"2024-01-01T12:00:00Z\",\n  \"location\": { \"latitude\": 6.5, \"longitude\": 3.3 }\n}"}}},
+        {"name":"Get Reading","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/readings/{{readingId}}","host":["{{host}}"],"path":["api","v1","readings","{{readingId}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Verify Reading","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/readings/{{readingId}}/verify","host":["{{host}}"],"path":["api","v1","readings","{{readingId}}","verify"],"protocol":"{{scheme}}","port":"{{port}}"}}}
+      ]
+    },
+    {
+      "name": "Assignments",
+      "item": [
+        {"name":"List Assignments","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/assignments?page=1&limit=20","host":["{{host}}"],"path":["api","v1","assignments"],"query":[{"key":"page","value":"1"},{"key":"limit","value":"20"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Create Assignment","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/assignments","host":["{{host}}"],"path":["api","v1","assignments"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"meter_id\": \"{{meterId}}\",\n  \"agent_id\": \"{{agentId}}\",\n  \"estimated_time\": 30\n}"}}},
+        {"name":"Bulk Assign","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/assignments/bulk","host":["{{host}}"],"path":["api","v1","assignments","bulk"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"meter_ids\": [\"{{meterId}}\"],\n  \"estimated_time\": 30\n}"}}},
+        {"name":"Update Assignment","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/assignments/{{assignmentId}}","host":["{{host}}"],"path":["api","v1","assignments","{{assignmentId}}"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"status\": \"in_progress\"\n}"}}},
+        {"name":"Agent Assignments","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/assignments/agent/{{agentId}}","host":["{{host}}"],"path":["api","v1","assignments","agent","{{agentId}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Update My Assignment Status","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/assignments/me/{{assignmentId}}/status?status=completed","host":["{{host}}"],"path":["api","v1","assignments","me","{{assignmentId}}","status"],"query":[{"key":"status","value":"completed"}],"protocol":"{{scheme}}","port":"{{port}}"}}}
+      ]
+    },
+    {
+      "name": "Approvals",
+      "item": [
+        {"name":"List Approvals","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/approvals?page=1&limit=20","host":["{{host}}"],"path":["api","v1","approvals"],"query":[{"key":"page","value":"1"},{"key":"limit","value":"20"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Create Approval Request","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/approvals","host":["{{host}}"],"path":["api","v1","approvals"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"meter_id\": \"{{meterId}}\",\n  \"meter_data\": { \"priority\": \"high\" },\n  \"submission_notes\": \"Please approve\"\n}"}}},
+        {"name":"Get Approval","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/approvals/{{requestId}}","host":["{{host}}"],"path":["api","v1","approvals","{{requestId}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Approve","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/approvals/{{requestId}}/approve?review_notes=ok","host":["{{host}}"],"path":["api","v1","approvals","{{requestId}}","approve"],"query":[{"key":"review_notes","value":"ok"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Reject","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/approvals/{{requestId}}/reject?review_notes=fix","host":["{{host}}"],"path":["api","v1","approvals","{{requestId}}","reject"],"query":[{"key":"review_notes","value":"fix"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Pending Approvals","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/approvals/pending","host":["{{host}}"],"path":["api","v1","approvals","pending"],"protocol":"{{scheme}}","port":"{{port}}"}}}
+      ]
+    },
+    {
+      "name": "Regions",
+      "item": [
+        {"name":"List Regions","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/regions?page=1&limit=20","host":["{{host}}"],"path":["api","v1","regions"],"query":[{"key":"page","value":"1"},{"key":"limit","value":"20"}],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Create Region","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/regions","host":["{{host}}"],"path":["api","v1","regions"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"name\": \"Region A\",\n  \"description\": \"Central\",\n  \"location\": { \"latitude\": 6.5, \"longitude\": 3.3 },\n  \"radius\": 1000\n}"}}},
+        {"name":"Get Region","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/regions/{{regionId}}","host":["{{host}}"],"path":["api","v1","regions","{{regionId}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Update Region","request":{"method":"PUT","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/regions/{{regionId}}","host":["{{host}}"],"path":["api","v1","regions","{{regionId}}"],"protocol":"{{scheme}}","port":"{{port}}"},"body":{"mode":"raw","raw":"{\n  \"radius\": 1500\n}"}}},
+        {"name":"Delete Region","request":{"method":"DELETE","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/regions/{{regionId}}","host":["{{host}}"],"path":["api","v1","regions","{{regionId}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Region Stats","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/regions/{{regionId}}/stats","host":["{{host}}"],"path":["api","v1","regions","{{regionId}}","stats"],"protocol":"{{scheme}}","port":"{{port}}"}}}
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {"name":"Upload Photo","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/files/upload/photo","host":["{{host}}"],"path":["api","v1","files","upload","photo"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Upload Document","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/files/upload/document","host":["{{host}}"],"path":["api","v1","files","upload","document"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Get File","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/files/{{filename}}","host":["{{host}}"],"path":["api","v1","files","{{filename}}"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Delete File","request":{"method":"DELETE","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/files/{{filename}}","host":["{{host}}"],"path":["api","v1","files","{{filename}}"],"protocol":"{{scheme}}","port":"{{port}}"}}}
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {"name":"Dashboard","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/reports/dashboard","host":["{{host}}"],"path":["api","v1","reports","dashboard"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Agent Performance","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/reports/agent-performance","host":["{{host}}"],"path":["api","v1","reports","agent-performance"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Meter Status","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/reports/meter-status","host":["{{host}}"],"path":["api","v1","reports","meter-status"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Readings Summary","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/reports/readings-summary","host":["{{host}}"],"path":["api","v1","reports","readings-summary"],"protocol":"{{scheme}}","port":"{{port}}"}}},
+        {"name":"Export Report","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],"url":{"raw":"{{scheme}}://{{host}}:{{port}}{{basePath}}/reports/export?report_type=dashboard&format=json","host":["{{host}}"],"path":["api","v1","reports","export"],"query":[{"key":"report_type","value":"dashboard"},{"key":"format","value":"json"}],"protocol":"{{scheme}}","port":"{{port}}"}}}
+      ]
+    }
+  ]
+}
+
