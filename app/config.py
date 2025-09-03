@@ -5,7 +5,7 @@ import os
 
 class Settings(BaseSettings):
     # Database
-    database_url: str = "postgresql://postgres:postgres@localhost:5432/utility_meter"
+    database_url: str = "postgresql://neondb_owner:npg_v7sng5AYNikI@ep-divine-boat-agnjpo0v-pooler.c-2.eu-central-1.aws.neon.tech/meter-reader-api"
     
     # Redis
     redis_url: str = "redis://localhost:6379"

@@ -1,22 +1,6 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgis/postgis:15-3.3
-    environment:
-      POSTGRES_DB: utility_meter
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   redis:
     image: redis:7-alpine
     ports:
@@ -34,7 +18,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/utility_meter
+      - DATABASE_URL=postgresql://neondb_owner:npg_v7sng5AYNikI@ep-divine-boat-agnjpo0v-pooler.c-2.eu-central-1.aws.neon.tech/meter-reader-api
       - REDIS_URL=redis://redis:6379
       - SECRET_KEY=your-secret-key-change-in-production
       - ALGORITHM=HS256
@@ -44,13 +28,10 @@ services:
       - .:/app
       - uploads:/app/uploads
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
-  postgres_data:
   redis_data:
   uploads:
