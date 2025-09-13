@@ -9,10 +9,8 @@ import enum
 
 
 class MeterType(str, enum.Enum):
-    ELECTRIC = "electric"
-    WATER = "water"
-    GAS = "gas"
-    HEAT = "heat"
+    DIGITAL = "digital"
+    ANALOG = "analog"
 
 
 class MeterPriority(str, enum.Enum):

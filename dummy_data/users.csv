@@ -1,0 +1,11 @@
+id,email,name,role,status,phone,department,region,permissions,created_at,updated_at,last_login
+19067a59-0733-4ea3-ab18-9460e7f4185f,admin1@example.com,Donald Walker,ADMIN,suspended,+240275404089,Administration,,"[""read"", ""write"", ""manage_users""]",2025-02-10T19:19:03.763025Z,2025-09-08T19:19:03.763037Z,2025-09-04T19:19:03.763045Z
+296d7ae1-2591-4a9d-a57d-259f8e59fa37,admin2@example.com,Stephanie Miller,ADMIN,active,+240282799349,Administration,,"[""read"", ""write"", ""manage_users""]",2025-03-13T19:19:03.763149Z,2025-09-03T19:19:03.763153Z,
+d1812c6e-2139-4b31-ae97-043f8f0b4775,manager3@example.com,Daniel Wagner,MANAGER,suspended,+240273482953,Operations,,"[""read"", ""write""]",2025-07-29T19:19:03.763236Z,2025-08-14T19:19:03.763239Z,2025-09-03T19:19:03.763242Z
+1203d52c-172e-47ed-9992-30cdd036f5eb,manager4@example.com,Matthew Gardner,MANAGER,inactive,+240225725524,Operations,,"[""read"", ""write""]",2024-10-01T19:19:03.763321Z,2025-08-13T19:19:03.763324Z,2025-09-07T19:19:03.763326Z
+f2513235-6506-48b9-a7ba-ad7797b36fbf,manager5@example.com,Rhonda Smith,MANAGER,suspended,+240201681330,Operations,,"[""read"", ""write""]",2024-09-26T19:19:03.763406Z,2025-08-23T19:19:03.763409Z,2025-08-26T19:19:03.763411Z
+3f68e10c-fb15-4bfa-a854-b3d4c457bb87,agent6@example.com,Gina Moore,AGENT,active,+240250734040,Field,Ebebiyin,"[""read""]",2025-04-06T19:19:03.763490Z,2025-08-23T19:19:03.763493Z,2025-09-06T19:19:03.763495Z
+4646944b-b09d-497d-bf6c-8cd5a9ece57f,agent7@example.com,Brandon Davis,AGENT,inactive,+240204815570,Field,Luba,"[""read""]",2024-12-13T19:19:03.763571Z,2025-08-18T19:19:03.763574Z,2025-09-01T19:19:03.763576Z
+738b9849-27fd-4b11-9504-00b5daf86ced,agent8@example.com,Renee Blair,AGENT,active,+240268981430,Field,Luba,"[""read""]",2025-03-20T19:19:03.763654Z,2025-08-17T19:19:03.763656Z,
+88aab07d-65ad-43ca-95b4-81031d7605d0,agent9@example.com,Jamie Arnold,AGENT,inactive,+240222001349,Field,Mongomo,"[""read""]",2024-09-22T19:19:03.763736Z,2025-08-13T19:19:03.763739Z,2025-09-04T19:19:03.763741Z
+98096be2-ec9f-42cd-bec0-54f54b48c219,agent10@example.com,Shannon Ray,AGENT,active,+240265925249,Field,Malabo,"[""read""]",2025-08-01T19:19:03.763820Z,2025-08-18T19:19:03.763822Z,2025-09-02T19:19:03.763824Z
