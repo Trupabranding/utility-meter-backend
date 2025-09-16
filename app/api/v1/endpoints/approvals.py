@@ -27,7 +27,7 @@ async def get_approval_requests(
     """Get paginated list of approval requests with optional filtering."""
     query = select(MeterApprovalRequest).options(
         selectinload(MeterApprovalRequest.meter),
-        selectinload(MeterApprovalRequest.agent),
+        selectinload(MeterApprovalRequest.agent).selectinload(Agent.user),
         selectinload(MeterApprovalRequest.reviewer)
     )
     

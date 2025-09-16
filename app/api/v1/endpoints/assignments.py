@@ -27,7 +27,7 @@ async def get_assignments(
     """Get paginated list of assignments with optional filtering."""
     query = select(MeterAssignment).options(
         selectinload(MeterAssignment.meter),
-        selectinload(MeterAssignment.agent)
+        selectinload(MeterAssignment.agent).selectinload(Agent.user)
     )
     
     # Apply filters

@@ -27,7 +27,7 @@ async def get_readings(
     """Get paginated list of meter readings with optional filtering."""
     query = select(MeterReading).options(
         selectinload(MeterReading.meter),
-        selectinload(MeterReading.agent)
+        selectinload(MeterReading.agent).selectinload(Agent.user)
     )
     
     # Apply filters
