@@ -6,6 +6,40 @@ from app.models.meter import MeterType, MeterPriority, MeterStatus
 from app.schemas.common import Location
 
 
+class AdministrativeLocation(BaseModel):
+    region: str
+    province: str
+    cityTown: str
+
+
+class LocationAndAddress(BaseModel):
+    administrativeLocation: AdministrativeLocation
+    fullAddress: str
+
+
+class OwnerInformation(BaseModel):
+    ownerName: str
+    phoneNumber: str
+    emailAddress: str
+
+
+class DetailedLocationInformation(BaseModel):
+    houseUnitNumber: Optional[str] = None
+    streetName: Optional[str] = None
+    buildingName: Optional[str] = None
+    floorLevel: Optional[str] = None
+    nearestLandmark: Optional[str] = None
+    locationNotes: Optional[str] = None
+
+
+class MeterDetails(BaseModel):
+    meterType: MeterType
+    serialNumber: str
+    initialReading: Optional[str] = None
+    meterPhoto: Optional[str] = None
+    additionalNotes: Optional[str] = None
+
+
 class MeterBase(BaseModel):
     serial_number: str = Field(..., min_length=1, max_length=255)
     address: str = Field(..., min_length=1)
@@ -18,8 +52,12 @@ class MeterBase(BaseModel):
     meter_metadata: Optional[Dict[str, Any]] = None
 
 
-class MeterCreate(MeterBase):
-    location: Optional[Location] = None
+class MeterCreate(BaseModel):
+    ownerInformation: OwnerInformation
+    locationAndAddress: LocationAndAddress
+    detailedLocationInformation: DetailedLocationInformation
+    gpsCoordinates: Optional[str] = None
+    meterDetails: MeterDetails
 
 
 class MeterUpdate(BaseModel):

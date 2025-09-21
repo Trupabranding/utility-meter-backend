@@ -110,40 +110,60 @@ async def create_meter(
     current_user: User = Depends(require_manager_or_admin),
     db: AsyncSession = Depends(get_db)
 ):
-    """Create a new meter."""
+    """Create a new meter using nested payload structure."""
+    # Extract key fields from nested payload
+    serial_number = meter_data.meterDetails.serialNumber
+    meter_type = meter_data.meterDetails.meterType
+    full_address = meter_data.locationAndAddress.fullAddress
+    owner_name = meter_data.ownerInformation.ownerName
+    initial_reading = meter_data.meterDetails.initialReading
+
     # Check if serial number already exists
     existing_meter = await db.execute(
-        select(Meter).where(Meter.serial_number == meter_data.serial_number)
+        select(Meter).where(Meter.serial_number == serial_number)
     )
     if existing_meter.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Meter with this serial number already exists"
         )
-    
+
+    # Compose metadata from the nested fields
+    metadata = {
+        "ownerInformation": meter_data.ownerInformation.model_dump(),
+        "administrativeLocation": meter_data.locationAndAddress.administrativeLocation.model_dump(),
+        "detailedLocationInformation": meter_data.detailedLocationInformation.model_dump(),
+        "gpsCoordinates": meter_data.gpsCoordinates,
+        "meterPhoto": meter_data.meterDetails.meterPhoto,
+        "additionalNotes": meter_data.meterDetails.additionalNotes,
+    }
+
     # Create meter
     new_meter = Meter(
-        serial_number=meter_data.serial_number,
-        address=meter_data.address,
-        location_id=meter_data.location_id,
-        meter_type=meter_data.meter_type,
-        priority=meter_data.priority,
-        status=meter_data.status,
-        estimated_time=meter_data.estimated_time,
-        owner=meter_data.owner,
-        meter_metadata=meter_data.meter_metadata
+        serial_number=serial_number,
+        address=full_address,
+        meter_type=meter_type,
+        # Keep defaults for priority/status/estimated_time unless later extended
+        owner=owner_name,
+        last_reading=initial_reading,
+        meter_metadata=metadata,
     )
-    
-    # Set location if provided
-    if meter_data.location:
-        new_meter.coordinates = func.ST_SetSRID(
-            func.ST_MakePoint(meter_data.location.longitude, meter_data.location.latitude), 4326
-        )
-    
+
+    # Set coordinates if gpsCoordinates provided (expects "lat,lon")
+    if meter_data.gpsCoordinates:
+        try:
+            lat_str, lon_str = [s.strip() for s in meter_data.gpsCoordinates.split(",", 1)]
+            lat = float(lat_str)
+            lon = float(lon_str)
+            new_meter.coordinates = func.ST_SetSRID(func.ST_MakePoint(lon, lat), 4326)
+        except Exception:
+            # Ignore coordinate parsing errors but keep payload otherwise
+            pass
+
     db.add(new_meter)
     await db.commit()
     await db.refresh(new_meter)
-    
+
     return ResponseModel(
         data=MeterResponse(
             id=new_meter.id,
@@ -155,13 +175,16 @@ async def create_meter(
             status=new_meter.status,
             last_reading=new_meter.last_reading,
             estimated_time=new_meter.estimated_time,
-            location=meter_data.location,
+            location=Location(
+                latitude=float(new_meter.coordinates.x) if new_meter.coordinates else None,
+                longitude=float(new_meter.coordinates.y) if new_meter.coordinates else None,
+            ) if new_meter.coordinates else None,
             owner=new_meter.owner,
             meter_metadata=new_meter.meter_metadata,
             created_at=new_meter.created_at,
-            updated_at=new_meter.updated_at
+            updated_at=new_meter.updated_at,
         ),
-        message="Meter created successfully"
+        message="Meter created successfully",
     )
 
 
