@@ -13,6 +13,8 @@ class MeterType(str, enum.Enum):
     WATER = "water"
     GAS = "gas"
     HEAT = "heat"
+    ANALOG = "analog"
+    DIGITAL = "digital"
 
 
 class MeterPriority(str, enum.Enum):
