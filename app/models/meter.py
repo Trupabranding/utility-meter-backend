@@ -38,9 +38,20 @@ class Meter(Base):
     serial_number = Column(String(255), unique=True, nullable=False, index=True)
     address = Column(Text, nullable=False)
     location_id = Column(String(100))
-    meter_type = Column(Enum(MeterType), nullable=False)
-    priority = Column(Enum(MeterPriority), nullable=False, default=MeterPriority.MEDIUM)
-    status = Column(Enum(MeterStatus), nullable=False, default=MeterStatus.ACTIVE)
+    meter_type = Column(
+        Enum(MeterType, values_callable=lambda x: [e.value for e in x], name="metertype"),
+        nullable=False
+    )
+    priority = Column(
+        Enum(MeterPriority, values_callable=lambda x: [e.value for e in x], name="meterpriority"),
+        nullable=False,
+        default=MeterPriority.MEDIUM
+    )
+    status = Column(
+        Enum(MeterStatus, values_callable=lambda x: [e.value for e in x], name="meterstatus"),
+        nullable=False,
+        default=MeterStatus.ACTIVE
+    )
     last_reading = Column(String(100))
     estimated_time = Column(Integer)  # in minutes
     coordinates = Column(Geography(geometry_type='POINT', srid=4326))

@@ -144,7 +144,7 @@ async def create_meter(
     new_meter = Meter(
         serial_number=serial_number,
         address=full_address,
-        meter_type=meter_type,
+        meter_type=meter_type.value if isinstance(meter_type, MeterType) else meter_type,
         # Keep defaults for priority/status/estimated_time unless later extended
         owner=owner_name,
         last_reading=initial_reading,
