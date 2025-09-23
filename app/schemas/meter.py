@@ -56,7 +56,7 @@ class MeterCreate(BaseModel):
     ownerInformation: OwnerInformation
     locationAndAddress: LocationAndAddress
     detailedLocationInformation: DetailedLocationInformation
-    gpsCoordinates: Optional[str] = None
+    gpsCoordinates: Optional[Location] = None
     meterDetails: MeterDetails
 
 

@@ -11,6 +11,7 @@ from app.models.user import User
 from app.schemas.meter import MeterCreate, MeterUpdate, MeterResponse, MeterListResponse, MeterSearchParams, MeterNearbyParams
 from app.schemas.common import ResponseModel, PaginationParams, PaginationResponse, Location
 from geoalchemy2.shape import to_shape
+from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter()
 
@@ -134,7 +135,7 @@ async def create_meter(
         "ownerInformation": meter_data.ownerInformation.model_dump(),
         "administrativeLocation": meter_data.locationAndAddress.administrativeLocation.model_dump(),
         "detailedLocationInformation": meter_data.detailedLocationInformation.model_dump(),
-        "gpsCoordinates": meter_data.gpsCoordinates,
+        "gpsCoordinates": meter_data.gpsCoordinates.model_dump() if meter_data.gpsCoordinates else None,
         "meterPhoto": meter_data.meterDetails.meterPhoto,
         "additionalNotes": meter_data.meterDetails.additionalNotes,
     }
@@ -150,20 +151,29 @@ async def create_meter(
         meter_metadata=metadata,
     )
 
-    # Set coordinates if gpsCoordinates provided (expects "lat,lon")
+    # Set coordinates if gpsCoordinates provided (expects object with latitude/longitude)
     if meter_data.gpsCoordinates:
-        try:
-            lat_str, lon_str = [s.strip() for s in meter_data.gpsCoordinates.split(",", 1)]
-            lat = float(lat_str)
-            lon = float(lon_str)
-            new_meter.coordinates = func.ST_SetSRID(func.ST_MakePoint(lon, lat), 4326)
-        except Exception:
-            # Ignore coordinate parsing errors but keep payload otherwise
-            pass
+        lat = float(meter_data.gpsCoordinates.latitude)
+        lon = float(meter_data.gpsCoordinates.longitude)
+        new_meter.coordinates = func.ST_SetSRID(func.ST_MakePoint(lon, lat), 4326)
 
-    db.add(new_meter)
-    await db.commit()
-    await db.refresh(new_meter)
+    try:
+        db.add(new_meter)
+        await db.commit()
+        await db.refresh(new_meter)
+    except SQLAlchemyError as e:
+        # Rollback and return informative server error
+        await db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database error while creating meter ({e.__class__.__name__}): {str(e)}"
+        )
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected error while creating meter ({e.__class__.__name__}): {str(e)}"
+        )
 
     return ResponseModel(
         data=MeterResponse(

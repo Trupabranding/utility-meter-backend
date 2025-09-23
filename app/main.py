@@ -80,6 +80,24 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     )
 
 
+# Fallback handler for any unhandled exceptions
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    # Log stack trace with request context for debugging
+    logger.exception("Unhandled error processing %s %s", request.method, request.url.path)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "error": "Internal server error",
+            "details": str(exc),
+            "method": request.method,
+            "path": request.url.path,
+            "status_code": 500,
+        },
+    )
+
+
 # Include API routes
 app.include_router(api_router, prefix="/api/v1")
 
