@@ -10,6 +10,7 @@ from app.models.meter_assignment import MeterAssignment
 from app.models.user import User
 from app.schemas.meter import MeterCreate, MeterUpdate, MeterResponse, MeterListResponse, MeterSearchParams, MeterNearbyParams
 from app.schemas.common import ResponseModel, PaginationParams, PaginationResponse, Location
+from geoalchemy2.shape import to_shape
 
 router = APIRouter()
 
@@ -87,10 +88,10 @@ async def get_meters(
                     meter_type=meter.meter_type,
                     priority=meter.priority,
                     status=meter.status,
-                    location=Location(
-                        latitude=float(meter.coordinates.x) if meter.coordinates else None,
-                        longitude=float(meter.coordinates.y) if meter.coordinates else None
-                    ) if meter.coordinates else None,
+                    location=(
+                        (lambda p: Location(latitude=float(p.y), longitude=float(p.x)))(to_shape(meter.coordinates))
+                        if meter.coordinates else None
+                    ),
                     created_at=meter.created_at
                 ) for meter in meters
             ],
@@ -175,10 +176,10 @@ async def create_meter(
             status=new_meter.status,
             last_reading=new_meter.last_reading,
             estimated_time=new_meter.estimated_time,
-            location=Location(
-                latitude=float(new_meter.coordinates.x) if new_meter.coordinates else None,
-                longitude=float(new_meter.coordinates.y) if new_meter.coordinates else None,
-            ) if new_meter.coordinates else None,
+            location=(
+                (lambda p: Location(latitude=float(p.y), longitude=float(p.x)))(to_shape(new_meter.coordinates))
+                if new_meter.coordinates else None
+            ),
             owner=new_meter.owner,
             meter_metadata=new_meter.meter_metadata,
             created_at=new_meter.created_at,
@@ -215,10 +216,10 @@ async def get_meter(
             status=meter.status,
             last_reading=meter.last_reading,
             estimated_time=meter.estimated_time,
-            location=Location(
-                latitude=float(meter.coordinates.x) if meter.coordinates else None,
-                longitude=float(meter.coordinates.y) if meter.coordinates else None
-            ) if meter.coordinates else None,
+            location=(
+                (lambda p: Location(latitude=float(p.y), longitude=float(p.x)))(to_shape(meter.coordinates))
+                if meter.coordinates else None
+            ),
             owner=meter.owner,
             meter_metadata=meter.meter_metadata,
             created_at=meter.created_at,
@@ -269,10 +270,10 @@ async def update_meter(
             status=meter.status,
             last_reading=meter.last_reading,
             estimated_time=meter.estimated_time,
-            location=Location(
-                latitude=float(meter.coordinates.x) if meter.coordinates else None,
-                longitude=float(meter.coordinates.y) if meter.coordinates else None
-            ) if meter.coordinates else None,
+            location=(
+                (lambda p: Location(latitude=float(p.y), longitude=float(p.x)))(to_shape(meter.coordinates))
+                if meter.coordinates else None
+            ),
             owner=meter.owner,
             meter_metadata=meter.meter_metadata,
             created_at=meter.created_at,
@@ -352,10 +353,10 @@ async def get_nearby_meters(
                 meter_type=meter.meter_type,
                 priority=meter.priority,
                 status=meter.status,
-                location=Location(
-                    latitude=float(meter.coordinates.x) if meter.coordinates else None,
-                    longitude=float(meter.coordinates.y) if meter.coordinates else None
-                ) if meter.coordinates else None,
+                location=(
+                    (lambda p: Location(latitude=float(p.y), longitude=float(p.x)))(to_shape(meter.coordinates))
+                    if meter.coordinates else None
+                ),
                 created_at=meter.created_at
             ) for meter in meters
         ]
@@ -393,10 +394,10 @@ async def get_unassigned_meters(
                 meter_type=meter.meter_type,
                 priority=meter.priority,
                 status=meter.status,
-                location=Location(
-                    latitude=float(meter.coordinates.x) if meter.coordinates else None,
-                    longitude=float(meter.coordinates.y) if meter.coordinates else None
-                ) if meter.coordinates else None,
+                location=(
+                    (lambda p: Location(latitude=float(p.y), longitude=float(p.x)))(to_shape(meter.coordinates))
+                    if meter.coordinates else None
+                ),
                 created_at=meter.created_at
             ) for meter in meters
         ]
