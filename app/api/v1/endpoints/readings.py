@@ -8,7 +8,7 @@ from app.auth.dependencies import get_current_user, get_current_agent, require_m
 from app.models.meter_reading import MeterReading
 from app.models.meter import Meter
 from app.models.agent import Agent
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.schemas.meter_reading import MeterReadingCreate, MeterReadingUpdate, MeterReadingResponse, MeterReadingListResponse
 from app.schemas.common import ResponseModel, PaginationParams, PaginationResponse, Location
 
@@ -21,7 +21,7 @@ async def get_readings(
     meter_id: Optional[str] = Query(None, description="Filter by meter ID"),
     agent_id: Optional[str] = Query(None, description="Filter by agent ID"),
     verified: Optional[bool] = Query(None, description="Filter by verification status"),
-    current_user: User = Depends(require_manager_or_admin),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get paginated list of meter readings with optional filtering."""
@@ -154,7 +154,7 @@ async def create_reading(
 @router.get("/{reading_id}", response_model=ResponseModel[MeterReadingResponse])
 async def get_reading(
     reading_id: str,
-    current_user: User = Depends(require_manager_or_admin),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get a specific meter reading by ID."""
@@ -171,6 +171,8 @@ async def get_reading(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Reading not found"
         )
+    
+    # All authenticated users can access
     
     return ResponseModel(
         data=MeterReadingResponse(
@@ -245,7 +247,7 @@ async def update_reading(
 @router.get("/meter/{meter_id}", response_model=ResponseModel[list[MeterReadingListResponse]])
 async def get_meter_readings(
     meter_id: str,
-    current_user: User = Depends(require_manager_or_admin),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get all readings for a specific meter."""
@@ -257,12 +259,14 @@ async def get_meter_readings(
             detail="Meter not found"
         )
     
-    result = await db.execute(
+    base_query = (
         select(MeterReading)
         .options(selectinload(MeterReading.meter), selectinload(MeterReading.agent))
         .where(MeterReading.meter_id == meter_id)
         .order_by(MeterReading.created_at.desc())
     )
+    
+    result = await db.execute(base_query)
     readings = result.scalars().all()
     
     return ResponseModel(

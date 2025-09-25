@@ -12,6 +12,7 @@ from app.schemas.meter import MeterCreate, MeterUpdate, MeterResponse, MeterList
 from app.schemas.common import ResponseModel, PaginationParams, PaginationResponse, Location
 from geoalchemy2.shape import to_shape
 from sqlalchemy.exc import SQLAlchemyError
+from app.models.user import UserRole
 
 router = APIRouter()
 
@@ -109,10 +110,16 @@ async def get_meters(
 @router.post("/", response_model=ResponseModel[MeterResponse])
 async def create_meter(
     meter_data: MeterCreate,
-    current_user: User = Depends(require_manager_or_admin),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new meter using nested payload structure."""
+    # Allow AGENT, MANAGER, ADMIN
+    if current_user.role not in [UserRole.AGENT, UserRole.MANAGER, UserRole.ADMIN]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied. Agent, manager or admin role required"
+        )
     # Extract key fields from nested payload
     serial_number = meter_data.meterDetails.serialNumber
     meter_type = meter_data.meterDetails.meterType
@@ -181,9 +188,9 @@ async def create_meter(
             serial_number=new_meter.serial_number,
             address=new_meter.address,
             location_id=new_meter.location_id,
-            meter_type=new_meter.meter_type,
-            priority=new_meter.priority,
-            status=new_meter.status,
+            meter_type=(MeterType(new_meter.meter_type) if isinstance(new_meter.meter_type, str) else new_meter.meter_type),
+            priority=(MeterPriority(new_meter.priority) if isinstance(new_meter.priority, str) else new_meter.priority),
+            status=(MeterStatus(new_meter.status) if isinstance(new_meter.status, str) else new_meter.status),
             last_reading=new_meter.last_reading,
             estimated_time=new_meter.estimated_time,
             location=(
@@ -221,9 +228,9 @@ async def get_meter(
             serial_number=meter.serial_number,
             address=meter.address,
             location_id=meter.location_id,
-            meter_type=meter.meter_type,
-            priority=meter.priority,
-            status=meter.status,
+            meter_type=(MeterType(meter.meter_type) if isinstance(meter.meter_type, str) else meter.meter_type),
+            priority=(MeterPriority(meter.priority) if isinstance(meter.priority, str) else meter.priority),
+            status=(MeterStatus(meter.status) if isinstance(meter.status, str) else meter.status),
             last_reading=meter.last_reading,
             estimated_time=meter.estimated_time,
             location=(
@@ -275,9 +282,9 @@ async def update_meter(
             serial_number=meter.serial_number,
             address=meter.address,
             location_id=meter.location_id,
-            meter_type=meter.meter_type,
-            priority=meter.priority,
-            status=meter.status,
+            meter_type=(MeterType(meter.meter_type) if isinstance(meter.meter_type, str) else meter.meter_type),
+            priority=(MeterPriority(meter.priority) if isinstance(meter.priority, str) else meter.priority),
+            status=(MeterStatus(meter.status) if isinstance(meter.status, str) else meter.status),
             last_reading=meter.last_reading,
             estimated_time=meter.estimated_time,
             location=(
@@ -360,9 +367,9 @@ async def get_nearby_meters(
                 id=meter.id,
                 serial_number=meter.serial_number,
                 address=meter.address,
-                meter_type=meter.meter_type,
-                priority=meter.priority,
-                status=meter.status,
+                meter_type=(MeterType(meter.meter_type) if isinstance(meter.meter_type, str) else meter.meter_type),
+                priority=(MeterPriority(meter.priority) if isinstance(meter.priority, str) else meter.priority),
+                status=(MeterStatus(meter.status) if isinstance(meter.status, str) else meter.status),
                 location=(
                     (lambda p: Location(latitude=float(p.y), longitude=float(p.x)))(to_shape(meter.coordinates))
                     if meter.coordinates else None
