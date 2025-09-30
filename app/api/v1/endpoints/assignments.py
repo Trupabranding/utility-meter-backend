@@ -93,6 +93,76 @@ async def get_assignments(
     )
 
 
+@router.get("/me", response_model=ResponseModel[PaginationResponse[MeterAssignmentListResponse]])
+async def get_my_assignments(
+    pagination: PaginationParams = Depends(),
+    status: Optional[AssignmentStatus] = Query(None, description="Filter by status"),
+    current_agent: Agent = Depends(get_current_agent),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get paginated list of the current agent's assignments with optional status filtering."""
+    query = select(MeterAssignment).options(
+        selectinload(MeterAssignment.meter),
+        selectinload(MeterAssignment.agent).selectinload(Agent.user)
+    ).where(MeterAssignment.agent_id == current_agent.id)
+
+    if status:
+        query = query.where(MeterAssignment.status == status)
+
+    # Total count
+    count_query = select(MeterAssignment).where(query.whereclause) if query.whereclause else select(MeterAssignment)
+    total_result = await db.execute(count_query)
+    # Only count those matching the agent filter; the whereclause already includes it
+    total = len(total_result.scalars().all())
+
+    # Pagination and ordering
+    query = query.order_by(MeterAssignment.assigned_at.desc()).offset(
+        (pagination.page - 1) * pagination.limit
+    ).limit(pagination.limit)
+
+    result = await db.execute(query)
+    assignments = result.scalars().all()
+
+    # Pagination info
+    pages = (total + pagination.limit - 1) // pagination.limit
+    has_next = pagination.page < pages
+    has_prev = pagination.page > 1
+
+    return ResponseModel(
+        data=PaginationResponse(
+            items=[
+                MeterAssignmentListResponse(
+                    id=assignment.id,
+                    meter_id=assignment.meter_id,
+                    agent_id=assignment.agent_id,
+                    status=assignment.status,
+                    estimated_time=assignment.estimated_time,
+                    assigned_at=assignment.assigned_at,
+                    completed_at=assignment.completed_at,
+                    meter={
+                        "id": assignment.meter.id,
+                        "serial_number": assignment.meter.serial_number,
+                        "address": assignment.meter.address
+                    } if assignment.meter else None,
+                    agent={
+                        "id": assignment.agent.id,
+                        "user": {
+                            "id": assignment.agent.user.id,
+                            "name": assignment.agent.user.name
+                        } if assignment.agent.user else None
+                    } if assignment.agent else None
+                ) for assignment in assignments
+            ],
+            total=total,
+            page=pagination.page,
+            limit=pagination.limit,
+            pages=pages,
+            has_next=has_next,
+            has_prev=has_prev
+        )
+    )
+
+
 @router.post("/", response_model=ResponseModel[MeterAssignmentResponse])
 async def create_assignment(
     assignment_data: MeterAssignmentCreate,
